@@ -1,0 +1,30 @@
+#!/bin/sh
+
+status () {
+    echo "---> ${@}" >&2
+}
+
+status "Checking requirements"
+if [ ! -d '/etc/glusterfs' ]; then
+  status "No /etc/glusterfs present"
+  exit 1
+fi
+if [ ! -f /etc/glusterfs/glusterd.vol ]; then
+    cp -nR /etc/glusterfs.def/* /etc/glusterfs/.
+    status "Missing config, added default"
+fi 
+
+
+
+status "Starting glusterd" 
+
+if [ -n $1 ]; then
+  status "Keep on running ..."
+  /usr/sbin/glusterd --no-daemon
+  exit
+fi
+
+status "execute single command"
+/usr/sbin/glusterd
+gluster "$@"
+
